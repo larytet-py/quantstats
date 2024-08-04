@@ -1,3 +1,7 @@
+# pip3 install ipython
+# pip3 install -r requirements.txt
+# pip3 install notebook
+# ~/.local/bin/jupyter-notebook
 %matplotlib inline
 import pandas as pd
 import quantstats as qs
