@@ -8,9 +8,14 @@
 # ~/.local/bin/jupyter-notebook
 import pandas as pd
 import quantstats as qs
+import argparse
 
-# Manually set the filename
-filename = 'BTCLV TRADES.csv'
+parser = argparse.ArgumentParser(description='Process some integers.')
+parser.add_argument('filename', type=str, help='The CSV file to be processed', default='BTCLV TRADES.csv')
+args = parser.parse_args()
+
+filename = args.filename
+print(f'Processing file: {filename}')
 
 # Extend pandas functionality with metrics, etc.
 qs.extend_pandas()
