@@ -15,10 +15,12 @@ import argparse
 # Argument parser setup
 parser = argparse.ArgumentParser(description='Process equity data.')
 parser.add_argument('filename', type=str, help='The CSV file to be processed')
+parser.add_argument('--mode', type=str, choices=['backtest', 'bot'], default='backtest', help='Mode of operation: "backtest" or "bot"')
 args = parser.parse_args()
 
 columns_names = {"time":"End Time", "balance": "Balance", "format": '%Y-%m-%d %H:%M:%S'}
-# columns_names = {"time":"Time", "balance": "daily balance", "format": '%d/%m/%Y %H:%M'}
+if args.mode == 'bot':
+    columns_names = {"time":"Time", "balance": "daily balance", "format": '%d/%m/%Y %H:%M'}
 
 # Get filename from arguments
 filename = args.filename
