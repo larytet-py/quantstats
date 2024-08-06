@@ -6,14 +6,21 @@
 # pip3 install -r requirements.txt
 # pip3 install notebook
 # ~/.local/bin/jupyter-notebook
+
+# Required imports
 import pandas as pd
 import quantstats as qs
 import argparse
 
-parser = argparse.ArgumentParser(description='Process some integers.')
-parser.add_argument('filename', type=str, help='The CSV file to be processed', default='BTCLV TRADES.csv')
+# Argument parser setup
+parser = argparse.ArgumentParser(description='Process equity data.')
+parser.add_argument('filename', type=str, help='The CSV file to be processed')
 args = parser.parse_args()
 
+columns_names = {"time":"End Time", "balance": "Balance", "format": '%Y-%m-%d %H:%M:%S'}
+# columns_names = {"time":"Time", "balance": "daily balance", "format": '%d/%m/%Y %H:%M'}
+
+# Get filename from arguments
 filename = args.filename
 print(f'Processing file: {filename}')
 
@@ -21,24 +28,31 @@ print(f'Processing file: {filename}')
 qs.extend_pandas()
 
 # Read the CSV file into a DataFrame
-trades = pd.read_csv(filename, parse_dates=['End Time', 'Next Start Time'])
+trades = pd.read_csv(filename)
 
-# Set the 'End Time' as the index
-trades.set_index('End Time', inplace=True)
+# Parse the 'Time' column with the specified date format
+trades[columns_names['time']] = pd.to_datetime(trades[columns_names['time']], format=columns_names['format'], errors='coerce')
 
-# Resample to daily frequency and forward-fill missing values
-daily_equity = trades['Balance'].resample('D').ffill()
+# Check if there are any parsing issues
+if trades[columns_names['time']].isnull().any():
+    print("Warning: There are parsing issues with the 'Time' column. Some dates might be NaT.")
 
-# Calculate daily returns
-daily_returns = daily_equity.pct_change().dropna()
+# Drop rows with NaT in 'Time' column
+# trades.dropna(subset=['Time'], inplace=True)
 
-# Calculate the Sharpe ratio
-sharpe_ratio = qs.stats.sharpe(daily_returns)
+# Set the 'Time' column as the index
+trades.set_index(columns_names['time'], inplace=True)
 
-# Print the Sharpe ratio
-print(f'Sharpe Ratio: {sharpe_ratio}')
+# Ensure the index is sorted
+trades.sort_index(inplace=True)
 
-# Alternatively, using the extend_pandas() functionality
-print(daily_returns.sharpe())
-qs.plots.snapshot(daily_returns, title='BTC Performance', show=True)
-qs.reports.html(daily_returns, title='BTC Trading Performance Report', output='btc_trading_performance_report.html')
+# Use raw equity data for plotting and reporting
+equity_data = trades[columns_names['balance']]
+
+# Plot the equity performance
+qs.plots.snapshot(equity_data, title='Equity Performance', show=True)
+
+# Generate an equity performance report
+qs.reports.html(equity_data, title='Trading Performance Report for '+filename, output=filename+'.html')
+
+
