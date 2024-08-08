@@ -20,7 +20,7 @@ args = parser.parse_args()
 
 columns_names = {"time":"End Time", "balance": "Balance", "format": '%Y-%m-%d %H:%M:%S'}
 if args.mode == 'bot':
-    columns_names = {"time":"Time", "balance": "daily balance", "format": '%d/%m/%Y %H:%M'}
+    columns_names = {"time":"Time", "balance": "daily balance", "format": '%Y-%m-%d %H:%M:%S'}
 
 # Get filename from arguments
 filename = args.filename
