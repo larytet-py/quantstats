@@ -1,3 +1,7 @@
+# docker build -t equity-processor .
+# docker run --rm -v $(pwd):/app equity-processor --help
+# docker run --rm -v $(pwd):/app equity-processor 'daily balance.csv' --mode=bot
+
 # Use the official Python image with the required version
 FROM python:3.10.12-slim
 
